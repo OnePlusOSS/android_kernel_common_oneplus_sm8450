@@ -8316,7 +8316,7 @@ static u64 cpu_shares_read_u64(struct cgroup_subsys_state *css,
 			       struct cftype *cft)
 {
 	struct task_group *tg = css_tg(css);
-	
+
 	if (!tg->se[0])
 	{
 		return (u64)stop_fair_group;
