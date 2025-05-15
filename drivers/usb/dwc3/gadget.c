@@ -2437,7 +2437,7 @@ static int dwc3_gadget_pullup(struct usb_gadget *g, int is_on)
 			dev_warn(dwc->dev, "timed out waiting for SETUP phase\n");
 	}
 
-	/*
+ 	/*
 	 * Avoid issuing a runtime resume if the device is already in the
 	 * suspended state during gadget disconnect.  DWC3 gadget was already
 	 * halted/stopped during runtime suspend.
@@ -2503,7 +2503,7 @@ static int dwc3_gadget_pullup(struct usb_gadget *g, int is_on)
 	spin_unlock_irqrestore(&dwc->lock, flags);
 	enable_irq(dwc->irq_gadget);
 
-	pm_runtime_put(dwc->dev);
+	pm_runtime_put_sync(dwc->dev);
 
 	return ret;
 }

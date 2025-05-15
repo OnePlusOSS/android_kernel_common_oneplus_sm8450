@@ -29,6 +29,10 @@ android/abi_gki_aarch64_vivo
 android/abi_gki_aarch64_xiaomi
 "
 
+if [ -f "${ROOT_DIR}/oplus/config/abi_gki_aarch64_oplus_internal" ]; then
+    ADDITIONAL_KMI_SYMBOL_LISTS+="android/abi_gki_aarch64_oplus_internal"
+fi
+
 FILES="${FILES}
 arch/arm64/boot/Image.lz4
 "

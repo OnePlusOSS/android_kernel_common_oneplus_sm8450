@@ -10,7 +10,8 @@
 #include <linux/regmap.h>
 #include <linux/slab.h>
 #include <linux/spinlock.h>
-
+#undef dev_dbg
+#define dev_dbg dev_err
 /* RTC Register offsets from RTC CTRL REG */
 #define PM8XXX_ALARM_CTRL_OFFSET	0x01
 #define PM8XXX_RTC_WRITE_OFFSET		0x02
@@ -207,6 +208,7 @@ static int pm8xxx_rtc_read_time(struct device *dev, struct rtc_time *tm)
 
 	secs = value[0] | (value[1] << 8) | (value[2] << 16) |
 	       ((unsigned long)value[3] << 24);
+	pr_err("RTC debug1  DATA[0x%x][0x%x][0x%x][0x%x]\n", value[0],value[1],value[2],value[3]);
 
 	rtc_time64_to_tm(secs, tm);
 
@@ -232,6 +234,7 @@ static int pm8xxx_rtc_set_alarm(struct device *dev, struct rtc_wkalrm *alarm)
 	}
 
 	spin_lock_irqsave(&rtc_dd->ctrl_reg_lock, irq_flags);
+	pr_err("RTC debug secs=%ld, DATA[0x%x][0x%x][0x%x][0x%x]\n", secs,value[0],value[1],value[2],value[3]);
 
 	rc = regmap_bulk_write(rtc_dd->regmap, regs->alarm_rw, value,
 			       sizeof(value));
@@ -248,6 +251,7 @@ static int pm8xxx_rtc_set_alarm(struct device *dev, struct rtc_wkalrm *alarm)
 		ctrl_reg |= regs->alarm_en;
 	else
 		ctrl_reg &= ~regs->alarm_en;
+	pr_err("RTC debug 0x%x=%0x%x\n", regs->alarm_ctrl,ctrl_reg);
 
 	rc = regmap_write(rtc_dd->regmap, regs->alarm_ctrl, ctrl_reg);
 	if (rc) {
@@ -281,6 +285,7 @@ static int pm8xxx_rtc_read_alarm(struct device *dev, struct rtc_wkalrm *alarm)
 	       ((unsigned long)value[3] << 24);
 
 	rtc_time64_to_tm(secs, &alarm->time);
+	pr_err("RTC debug  DATA[0x%x][0x%x][0x%x][0x%x]\n", value[0],value[1],value[2],value[3]);
 
 	dev_dbg(dev, "Alarm set for - h:m:s=%ptRt, y-m-d=%ptRdr\n",
 		&alarm->time, &alarm->time);
