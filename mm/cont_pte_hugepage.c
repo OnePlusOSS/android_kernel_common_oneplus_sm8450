@@ -66,6 +66,7 @@
 #define VMA_NAME_SCUDO_SECONDARY	"scudo:secondary"
 #define MAX_LEN_CHP_VMA_NAME (sizeof(VMA_NAME_DALVIK_MAIN) + 1)
 #define LIBC_SO "libc.so"
+#define ABNORMAL_UID_NUM_MAX	16
 
 DEFINE_STATIC_KEY_FALSE(cont_pte_huge_page_enabled_key);
 
@@ -3003,7 +3004,7 @@ static int proc_stat_show(struct seq_file *s, void *v)
 	seq_puts(s, "chp_abnormal_ptes_stat\n");
 	cnt = atomic64_read(&perf_stat.chp_abnormal_ptes_uid_cnt);
 	seq_printf(s, " chp_abnormal_ptes_uid_cnt: %llu\n", cnt);
-	for (i = 0; i <= cnt; i++) {
+	for (i = 0; i < min_t(u64, cnt, (u64)ABNORMAL_UID_NUM_MAX); i++) {
 		if (i != CHP_ABMORMAL_PTES_SEQ && perf_stat.abps[i].reason) {
 			reason = perf_stat.abps[i].reason;
 
@@ -3106,12 +3107,11 @@ early_param("cmdline_cont_pte_sup_mem", cmdline_parse_cont_pte_sup_mem);
 static int __init cmdline_parse_prjname(char *p)
 {
 	static const char *cn_prjs[] = {
-		"22091", "22803", "23023", "22001",
+		"23023", "22001",
 		"21001",
 		NULL,
 	};
 	static const char *other_prjs[] = {
-		"22227", "22881",
 		"21201",
 		NULL,
 	};
